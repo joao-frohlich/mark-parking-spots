@@ -93,11 +93,12 @@ def redirect(tmp_window, img_path, js_path):
 
 
 def call_annotation_view(tmp_img, tmp_json):
+    # if True:
     if tmp_img != '' and tmp_json != '':
-    # if tmp_img == '':
-    #     tmp_img = '/home/joao/PIC/Datasets/PLD/annotations'
-    # if tmp_json == '':
-    #     tmp_json = '/home/joao/PIC/Datasets/PLD/annotations/vxusd.json'
+        # if tmp_img == '':
+        #     tmp_img = '/home/joao/PIC/Datasets/PLD/annotations'
+        # if tmp_json == '':
+        #     tmp_json = '/home/joao/PIC/Datasets/PLD/annotations/vxusd.json'
         tmp_window = tk.Toplevel()
         tmp_window.configure(padx = 20, pady = 20, bg = "#1c1c1c")
         label3 = tk.Label(tmp_window, text = "Insert image id", bg="#1c1c1c", fg="#c1c1c1")
@@ -107,6 +108,7 @@ def call_annotation_view(tmp_img, tmp_json):
         entry.grid(row=0, column=1)
         confirm_button = tk.Button(tmp_window, text = "Confirm", bg="#1c1c1c", fg="#c1c1c1", activebackground = "#3c3c3c", command = lambda:redirect(tmp_window,tmp_img,tmp_json))
         confirm_button.grid(row=1, column=0, pady=10)
+        tmp_window.bind("<Return>", lambda x: redirect(tmp_window,tmp_img,tmp_json))
     else:
         print("Error, paths not defined")
 
@@ -122,5 +124,8 @@ start_annotation_button = tk.Button(
     width=17
 )
 start_annotation_button.grid(row=2,column=0)
+
+root.bind("<Control-j>", lambda x: search_json())
+root.bind("<Control-m>", lambda x: search_folder())
 
 root.mainloop()

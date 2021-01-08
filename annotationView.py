@@ -10,6 +10,8 @@ def set_image(image_path, image_data, image_id, im_width, im_height):
     global bg_label
     global checkboxes
     global vars
+    global aux_centers
+    aux_centers = {}
     centers = imageProcessing.drawMasks(image_path, '/tmp/aux.jpg', image_data)
     my_image = ImageTk.PhotoImage(Image.open('/tmp/aux.jpg').resize((800,600), Image.ANTIALIAS))
     bg_label = tk.Label(image_frame, image=my_image)
@@ -27,15 +29,19 @@ def set_image(image_path, image_data, image_id, im_width, im_height):
             padx=0,
             pady=0
         )
+        aux_centers[center[0]] = [int(center[1]*(800/im_width)), int(center[2]*(600/im_height))]
         vars[center[0]].set(center[3])
-        checkboxes[center[0]].place(x = int(center[1]*(800/im_width)), y = int(center[2]*(600/im_height)), height=7, width=7)
+        checkboxes[center[0]].place(x = aux_centers[center[0]][0], y = aux_centers[center[0]][1], height=7, width=7)
+        # vars[center[0]].set(center[3])
+        # checkboxes[center[0]].place(x = int(center[1]*(800/im_width)), y = int(center[2]*(600/im_height)), height=7, width=7)
 
-def prev_image(num_images):
+def prev_image(num_images, json_path):
     global data
     global imgs_path
     global current_image
     global status_frame
     global status_label
+    save_image(json_path)
     if (current_image > 1):
         current_image-=1
         image_id = current_image
@@ -67,12 +73,13 @@ def save_image(json_path):
     image_id = current_image
     set_image(imgs_path+'/'+data[image_id]['image_info']['path'], data[image_id]['parkingSpaces_info'], image_id, data[image_id]['image_info']['width'], data[image_id]['image_info']['height'])
 
-def next_image(num_images):
+def next_image(num_images, json_path):
     global data
     global imgs_path
     global current_image
     global status_frame
     global status_label
+    save_image(json_path)
     if (current_image < num_images):
         current_image+=1
         image_id = current_image
@@ -102,30 +109,27 @@ def select_undefined(json_path):
     checkboxes2 = {}
     aux_values = {}
     tmp_window = tk.Toplevel()
-    tmp_window.configure(padx = 20, pady = 20, bg = "#1c1c1c")
-    tmp_window.geometry("400x600")
+    tmp_window.configure(bg = "#1c1c1c")
+    tmp_window.geometry("800x630")
+    global my_image2
+    my_image2 = ImageTk.PhotoImage(Image.open('/tmp/aux.jpg').resize((800,600), Image.ANTIALIAS))
+    bg_label2 = tk.Label(tmp_window, image=my_image2)
+    bg_label2.place(x=0,y=0)
     for i in vars:
         aux_values[i] = vars[i].get()
         checkboxes2[i] = tk.Checkbutton(
             tmp_window,
-            text=str(i),
             variable=vars[i],
             onvalue=3,
             offvalue=aux_values[i],
-            bg="#1c1c1c",
-            fg="#c1c1c1",
-            anchor='w',
-            highlightcolor="#1c1c1c",
-            selectcolor="#1c1c1c",
-            activebackground="#3c3c3c",
             bd=0,
-            padx=10,
-            pady=0,
-            width=10
+            padx=0,
+            pady=0
         )
-        checkboxes2[i].grid(row=(i-1)//3, column=(i-1)%3)
+        checkboxes2[i].place(x=aux_centers[i][0], y=aux_centers[i][1], height=7, width=7)
     confirm_button = tk.Button(tmp_window, text = "Confirm", bg="#1c1c1c", fg="#c1c1c1", activebackground = "#3c3c3c", pady=10, command = lambda: save_undefined(tmp_window, json_path))
-    confirm_button.grid(column = 0, columnspan = 3)
+    confirm_button.place(x=360,y=605,width=80, height=20)
+    tmp_window.bind("<Return>", lambda x: save_undefined(tmp_window, json_path))
 
 def change_image(tmp_window, num_images):
     global entry1
@@ -166,6 +170,7 @@ def select_image(num_images):
     entry1.grid(row=0, column=1)
     confirm_button = tk.Button(tmp_window, text = "Confirm", bg="#1c1c1c", fg="#c1c1c1", activebackground = "#3c3c3c", command = lambda:change_image(tmp_window,num_images))
     confirm_button.grid(row=1, column=0, pady=10)
+    tmp_window.bind("<Return>", lambda x: change_image(tmp_window, num_images))
 
 def annotation_view(images_path, json_path, image_id, root):
     top = tk.Toplevel()
@@ -201,7 +206,7 @@ def annotation_view(images_path, json_path, image_id, root):
         bg = "#1c1c1c",
         activebackground = "#3c3c3c",
         fg = "#c1c1c1",
-        command = lambda: prev_image(num_images)
+        command = lambda: prev_image(num_images, json_path)
     )
     prev_image_button.place(x=20,y=20, width=160, height=25)
 
@@ -221,7 +226,7 @@ def annotation_view(images_path, json_path, image_id, root):
         bg = "#1c1c1c",
         activebackground = "#3c3c3c",
         fg = "#c1c1c1",
-        command = lambda: next_image(num_images)
+        command = lambda: next_image(num_images, json_path)
     )
     next_image_button.place(x=20,y=110, width=160, height=25)
 
@@ -272,5 +277,13 @@ def annotation_view(images_path, json_path, image_id, root):
         anchor = tk.E,
     )
     status_label.pack(expand=True, fill='both')
+
+    top.bind("<Control-q>", lambda x: prev_image(num_images, json_path))
+    top.bind("<Control-s>", lambda x: save_image(json_path))
+    top.bind("<Control-e>", lambda x: next_image(num_images, json_path))
+    top.bind("<Control-a>", lambda x: select_undefined(json_path))
+    top.bind("<Control-f>", lambda x: select_image(num_images))
+    top.bind("<Escape>", lambda x: root.destroy())
+
 
     # return top
