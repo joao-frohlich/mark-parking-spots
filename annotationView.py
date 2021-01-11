@@ -35,13 +35,14 @@ def set_image(image_path, image_data, image_id, im_width, im_height):
         # vars[center[0]].set(center[3])
         # checkboxes[center[0]].place(x = int(center[1]*(800/im_width)), y = int(center[2]*(600/im_height)), height=7, width=7)
 
-def prev_image(num_images, json_path):
+def prev_image(num_images, json_path, save):
     global data
     global imgs_path
     global current_image
     global status_frame
     global status_label
-    save_image(json_path)
+    if save:
+        save_image(json_path)
     if (current_image > 1):
         current_image-=1
         image_id = current_image
@@ -73,13 +74,14 @@ def save_image(json_path):
     image_id = current_image
     set_image(imgs_path+'/'+data[image_id]['image_info']['path'], data[image_id]['parkingSpaces_info'], image_id, data[image_id]['image_info']['width'], data[image_id]['image_info']['height'])
 
-def next_image(num_images, json_path):
+def next_image(num_images, json_path, save):
     global data
     global imgs_path
     global current_image
     global status_frame
     global status_label
-    save_image(json_path)
+    if save:
+        save_image(json_path)
     if (current_image < num_images):
         current_image+=1
         image_id = current_image
@@ -206,9 +208,9 @@ def annotation_view(images_path, json_path, image_id, root):
         bg = "#1c1c1c",
         activebackground = "#3c3c3c",
         fg = "#c1c1c1",
-        command = lambda: prev_image(num_images, json_path)
+        command = lambda: prev_image(num_images, json_path, True)
     )
-    prev_image_button.place(x=20,y=20, width=160, height=25)
+    prev_image_button.place(x=15,y=20, width=170, height=25)
 
     save_image_button = tk.Button(
         side_menu,
@@ -218,7 +220,7 @@ def annotation_view(images_path, json_path, image_id, root):
         fg = "#c1c1c1",
         command = lambda: save_image(json_path)
     )
-    save_image_button.place(x=20,y=65, width=160, height=25)
+    save_image_button.place(x=15,y=65, width=170, height=25)
 
     next_image_button = tk.Button(
         side_menu,
@@ -226,9 +228,29 @@ def annotation_view(images_path, json_path, image_id, root):
         bg = "#1c1c1c",
         activebackground = "#3c3c3c",
         fg = "#c1c1c1",
-        command = lambda: next_image(num_images, json_path)
+        command = lambda: next_image(num_images, json_path, True)
     )
-    next_image_button.place(x=20,y=110, width=160, height=25)
+    next_image_button.place(x=15,y=110, width=170, height=25)
+
+    prev_image_no_save_button = tk.Button(
+        side_menu,
+        text = "Previous Image No Save",
+        bg = "#1c1c1c",
+        activebackground = "#3c3c3c",
+        fg = "#c1c1c1",
+        command = lambda: prev_image(num_images, json_path, False)
+    )
+    prev_image_no_save_button.place(x=15,y=265, width=170, height=25)
+
+    next_image_no_save_button = tk.Button(
+        side_menu,
+        text = "Next Image No Save",
+        bg = "#1c1c1c",
+        activebackground = "#3c3c3c",
+        fg = "#c1c1c1",
+        command = lambda: next_image(num_images, json_path, False)
+    )
+    next_image_no_save_button.place(x=15,y=310, width=170, height=25)
 
     close_program_button = tk.Button(
         side_menu,
@@ -238,7 +260,7 @@ def annotation_view(images_path, json_path, image_id, root):
         fg = "#c1c1c1",
         command = root.destroy
     )
-    close_program_button.place(x=20,y=465, width=160, height=25)
+    close_program_button.place(x=15,y=465, width=170, height=25)
 
     select_undefined_button = tk.Button(
         side_menu,
@@ -248,7 +270,7 @@ def annotation_view(images_path, json_path, image_id, root):
         fg = "#c1c1c1",
         command = lambda: select_undefined(json_path)
     )
-    select_undefined_button.place(x=20,y=510, width=160, height=25)
+    select_undefined_button.place(x=15,y=510, width=170, height=25)
 
     select_image_button = tk.Button(
         side_menu,
@@ -258,7 +280,7 @@ def annotation_view(images_path, json_path, image_id, root):
         fg = "#c1c1c1",
         command = lambda: select_image(num_images)
     )
-    select_image_button.place(x=20,y=555, width=160, height=25)
+    select_image_button.place(x=15,y=555, width=170, height=25)
 
     global status_frame
     status_frame = tk.Frame(top, bg= "#1c1c1c")
@@ -278,9 +300,11 @@ def annotation_view(images_path, json_path, image_id, root):
     )
     status_label.pack(expand=True, fill='both')
 
-    top.bind("<Control-q>", lambda x: prev_image(num_images, json_path))
+    top.bind("<Control-q>", lambda x: prev_image(num_images, json_path, True))
     top.bind("<Control-s>", lambda x: save_image(json_path))
-    top.bind("<Control-e>", lambda x: next_image(num_images, json_path))
+    top.bind("<Control-e>", lambda x: next_image(num_images, json_path, True))
+    top.bind("<Control-p>", lambda x: prev_image(num_images, json_path, False))
+    top.bind("<Control-n>", lambda x: next_image(num_images, json_path, False))
     top.bind("<Control-a>", lambda x: select_undefined(json_path))
     top.bind("<Control-f>", lambda x: select_image(num_images))
     top.bind("<Escape>", lambda x: root.destroy())
