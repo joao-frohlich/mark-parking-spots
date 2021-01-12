@@ -23,6 +23,8 @@ def drawMask(img, raw_mask):
 def openImage(image_path):
     return cv.imread(image_path, -1)
 
+def originalImage(tmp_img_path, image_path):
+    cv.imwrite(tmp_img_path, cv.imread(image_path, -1))
 
 def drawMasks(image_path, tmp_img_path, raw_masks):
     img = openImage(image_path)

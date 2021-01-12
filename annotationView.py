@@ -17,6 +17,9 @@ def set_image(image_path, image_data, image_id, im_width, im_height):
     bg_label = tk.Label(image_frame, image=my_image)
     bg_label.place(x=0,y=0)
     vars = {}
+    if checkboxes != {}:
+        for i in checkboxes:
+            checkboxes[i].forget()
     checkboxes = {}
     for center in centers:
         vars[center[0]] = tk.IntVar()
@@ -174,6 +177,19 @@ def select_image(num_images):
     confirm_button.grid(row=1, column=0, pady=10)
     tmp_window.bind("<Return>", lambda x: change_image(tmp_window, num_images))
 
+def show_original_image(image_path):
+    tmp_window = tk.Toplevel()
+    tmp_window.configure(bg = "#1c1c1c")
+    tmp_window.geometry("800x630")
+    global my_image3
+    imageProcessing.originalImage('/tmp/aux2.jpg', image_path)
+    my_image3 = ImageTk.PhotoImage(Image.open('/tmp/aux2.jpg').resize((800,600), Image.ANTIALIAS))
+    bg_label3 = tk.Label(tmp_window, image=my_image3)
+    bg_label3.place(x=0,y=0)
+    exit_button = tk.Button(tmp_window, text = "Exit", bg="#1c1c1c", fg="#c1c1c1", activebackground = "#3c3c3c", pady=10, command = tmp_window.destroy)
+    exit_button.place(x=360,y=605,width=80, height=20)
+    tmp_window.bind("<Return>", lambda x: tmp_window.destroy())
+
 def annotation_view(images_path, json_path, image_id, root):
     top = tk.Toplevel()
     top.title("Annotation")
@@ -184,6 +200,8 @@ def annotation_view(images_path, json_path, image_id, root):
     global imgs_path
     global current_image
     global json_data
+    global checkboxes
+    checkboxes = {}
     current_image = image_id
     imgs_path = images_path
     json_data, data = jsonProcessing.openJson(json_path)
@@ -252,6 +270,16 @@ def annotation_view(images_path, json_path, image_id, root):
     )
     next_image_no_save_button.place(x=15,y=310, width=170, height=25)
 
+    show_original_image_button = tk.Button(
+        side_menu,
+        text = "Show Original Image",
+        bg = "#1c1c1c",
+        activebackground = "#3c3c3c",
+        fg = "#c1c1c1",
+        command = lambda: show_original_image(images_path+'/'+data[current_image]['image_info']['path'])
+    )
+    show_original_image_button.place(x=15,y=420, width=170, height=25)
+
     close_program_button = tk.Button(
         side_menu,
         text = "Close Program",
@@ -307,6 +335,7 @@ def annotation_view(images_path, json_path, image_id, root):
     top.bind("<Control-n>", lambda x: next_image(num_images, json_path, False))
     top.bind("<Control-a>", lambda x: select_undefined(json_path))
     top.bind("<Control-f>", lambda x: select_image(num_images))
+    top.bind("<Control-o>", lambda x: show_original_image(images_path+'/'+data[current_image]['image_info']['path']))
     top.bind("<Escape>", lambda x: root.destroy())
 
 
