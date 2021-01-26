@@ -93,12 +93,12 @@ def redirect(tmp_window, img_path, js_path):
 
 
 def call_annotation_view(tmp_img, tmp_json):
-    # if True:
-    if tmp_img != '' and tmp_json != '':
-        # if tmp_img == '':
-        #     tmp_img = '/home/joao/PIC/Datasets/PLD/annotations'
-        # if tmp_json == '':
-        #     tmp_json = '/home/joao/PIC/Datasets/PLD/annotations/vxusd.json'
+    if True:
+    # if tmp_img != '' and tmp_json != '':
+        if tmp_img == '':
+            tmp_img = '/home/joao/PIC/Datasets/PLD/annotations'
+        if tmp_json == '':
+            tmp_json = '/home/joao/PIC/Datasets/PLD/annotations/vmlix.json'
         tmp_window = tk.Toplevel()
         tmp_window.configure(padx = 20, pady = 20, bg = "#1c1c1c")
         label3 = tk.Label(tmp_window, text = "Insert image id", bg="#1c1c1c", fg="#c1c1c1")

@@ -64,16 +64,35 @@ def prev_image(num_images, json_path, save):
         )
         status_label.pack(expand=True, fill='both')
 
+        global info_label
+        info_label = tk.Label(
+            status_frame,
+            text='Date: ' + str(data[current_image]['image_info']['date'][2])
+                + '/' + str(data[current_image]['image_info']['date'][1])
+                + '/' + str(data[current_image]['image_info']['date'][0])
+                + '\tCamera: ' + str(data[current_image]['image_info']['camera_id']),
+            border = 1,
+            background = '#1c1c1c',
+            foreground = '#c1c1c1',
+            highlightbackground = "#c1c1c1",
+            highlightcolor = "#c1c1c1",
+            highlightthickness = 1
+        )
+        info_label.place(x=0, y=0)
+
 def save_image(json_path):
     global vars
     global json_data
     global data
     global current_image
     global imgs_path
+    id = 0
     for i in vars:
         json_data['parkingSpaces'][i-1]['status_id'] = vars[i].get()
+        data[current_image]['parkingSpaces_info'][id]['status_id'] = vars[i].get()
+        id+=1
     jsonProcessing.saveJson(json_data, json_path)
-    json_data, data = jsonProcessing.openJson(json_path)
+    #json_data, data = jsonProcessing.openJson(json_path)
     image_id = current_image
     set_image(imgs_path+'/'+data[image_id]['image_info']['path'], data[image_id]['parkingSpaces_info'], image_id, data[image_id]['image_info']['width'], data[image_id]['image_info']['height'])
 
@@ -102,6 +121,22 @@ def next_image(num_images, json_path, save):
             anchor = tk.E,
         )
         status_label.pack(expand=True, fill='both')
+
+        global info_label
+        info_label = tk.Label(
+            status_frame,
+            text='Date: ' + str(data[current_image]['image_info']['date'][2])
+                + '/' + str(data[current_image]['image_info']['date'][1])
+                + '/' + str(data[current_image]['image_info']['date'][0])
+                + '\tCamera: ' + str(data[current_image]['image_info']['camera_id']),
+            border = 1,
+            background = '#1c1c1c',
+            foreground = '#c1c1c1',
+            highlightbackground = "#c1c1c1",
+            highlightcolor = "#c1c1c1",
+            highlightthickness = 1
+        )
+        info_label.place(x=0, y=0)
 
 def save_undefined(tmp_window, json_path):
     tmp_window.destroy()
@@ -163,6 +198,22 @@ def change_image(tmp_window, num_images):
                 anchor = tk.E,
             )
             status_label.pack(expand=True, fill='both')
+
+            global info_label
+            info_label = tk.Label(
+                status_frame,
+                text='Date: ' + str(data[current_image]['image_info']['date'][2])
+                    + '/' + str(data[current_image]['image_info']['date'][1])
+                    + '/' + str(data[current_image]['image_info']['date'][0])
+                    + '\tCamera: ' + str(data[current_image]['image_info']['camera_id']),
+                border = 1,
+                background = '#1c1c1c',
+                foreground = '#c1c1c1',
+                highlightbackground = "#c1c1c1",
+                highlightcolor = "#c1c1c1",
+                highlightthickness = 1
+            )
+            info_label.place(x=0, y=0)
     tmp_window.destroy()
 
 def select_image(num_images):
@@ -327,6 +378,22 @@ def annotation_view(images_path, json_path, image_id, root):
         anchor = tk.E,
     )
     status_label.pack(expand=True, fill='both')
+
+    global info_label
+    info_label = tk.Label(
+        status_frame,
+        text='Date: ' + str(data[image_id]['image_info']['date'][2])
+            + '/' + str(data[image_id]['image_info']['date'][1])
+            + '/' + str(data[image_id]['image_info']['date'][0])
+            + '\tCamera: ' + str(data[image_id]['image_info']['camera_id']),
+        border = 1,
+        background = '#1c1c1c',
+        foreground = '#c1c1c1',
+        highlightbackground = "#c1c1c1",
+        highlightcolor = "#c1c1c1",
+        highlightthickness = 1
+    )
+    info_label.place(x=0, y=0)
 
     top.bind("<Control-q>", lambda x: prev_image(num_images, json_path, True))
     top.bind("<Control-s>", lambda x: save_image(json_path))

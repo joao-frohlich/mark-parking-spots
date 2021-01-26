@@ -17,7 +17,16 @@ def processMask(raw_mask):
 
 def drawMask(img, raw_mask):
     mask,status = processMask(raw_mask)
-    cv.polylines(img, [mask], True, ((status//2)*255, (not (status&1))*255, (status&1)*255))
+    # b,g,r = [0,0,0]
+    # if status == 0:
+    #     g = 1
+    # elif status == 1:
+    #     r = 1
+    # else:
+    #     g = 1
+    #     r = 1
+    #cv.polylines(img, [mask], True, (b*255, g*255, r*255))
+    cv.polylines(img, [mask], True, (0, (not (status&1))*255, bool(status)*255))
     return img
 
 def openImage(image_path):
