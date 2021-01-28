@@ -241,6 +241,16 @@ def show_original_image(image_path):
     exit_button.place(x=360,y=605,width=80, height=20)
     tmp_window.bind("<Return>", lambda x: tmp_window.destroy())
 
+def replicate_annotations(json_path):
+    global json_data
+    global data
+    global current_image
+    image_ids = jsonProcessing.get_image_ids_from_date(json_data, data[current_image]['image_info']['date'])
+    for im_id in image_ids:
+        if im_id != current_image:
+            data, json_data = jsonProcessing.copy_statuses(data,json_data,current_image,im_id)
+    jsonProcessing.saveJson(json_data, json_path)
+
 def annotation_view(images_path, json_path, image_id, root):
     top = tk.Toplevel()
     top.title("Annotation")
@@ -300,6 +310,16 @@ def annotation_view(images_path, json_path, image_id, root):
         command = lambda: next_image(num_images, json_path, True)
     )
     next_image_button.place(x=15,y=110, width=170, height=25)
+
+    replicate_annotations_button = tk.Button(
+        side_menu,
+        text = "Replicate Annotations",
+        bg = "#1c1c1c",
+        activebackground = "#3c3c3c",
+        fg = "#c1c1c1",
+        command = lambda: replicate_annotations(json_path)
+    )
+    replicate_annotations_button.place(x=15,y=155, width=170, height=25)
 
     prev_image_no_save_button = tk.Button(
         side_menu,
